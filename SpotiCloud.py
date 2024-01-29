@@ -1,4 +1,3 @@
-import json
 import time
 import spotipy
 import spotipy.util as util
@@ -6,25 +5,32 @@ from pyowm import OWM
 from random import randrange
 from collections import OrderedDict
 import csv
+from dotenv import load_dotenv
+from spotipy.oauth2 import SpotifyClientCredentials
+import spotipy.oauth2 as oauth2
+import os
 
-SCOPE = 'playlist-modify-public'
-CLIENTID = '12a006cfd712418e86d2c660c6bb0b2e'
-SECRETID = '5f1db05c4d26454f8c4fd09209d4c150'
-RED_URI = 'https://www.google.com.ar/'
-USER = 'ii4hjin5jvi883c76z6855plz'
-OWMKEY="ab80e05035de9a636ccca6c4250dfa6d"
+load_dotenv()
+
+SCOPE =  os.environ.get("SCOPE")
+SPOTIPY_CLIENT_ID =  os.environ.get("SPOTIPY_CLIENT_ID")
+SPOTIPY_CLIENT_SECRET =  os.environ.get("SPOTIPY_CLIENT_SECRET")
+SPOTIPY_REDIRECT_URI =  os.environ.get("SPOTIPY_REDIRECT_URI")
+USER =  os.environ.get("USER")
+OWMKEY= os.environ.get("OWMKEY")
+spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(client_id =SPOTIPY_CLIENT_ID, client_secret =SPOTIPY_CLIENT_SECRET))
 
 def autorizacion():
     "Genera el TOKEN de Spotipy"
     bandera=True
-    while bandera:
-        try:
-            token = util.prompt_for_user_token(USER,SCOPE,CLIENTID,SECRETID,RED_URI)
-            objeto = spotipy.Spotify(auth=token)
-            bandera=False
-        except:
-            print("Error, no se puede obtener informacion del usuario.")
-    return objeto
+    #while bandera:
+    try:
+        #token = util.prompt_for_user_token(USER,SCOPE,CLIENTID,SECRETID,RED_URI)
+        spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(client_id =SPOTIPY_CLIENT_ID, client_secret =SPOTIPY_CLIENT_SECRET))
+        return spotify
+    except:
+        print("Error, no se puede obtener informacion del usuario.")
+    
 
 def keyOwm(key):
     "Pide la key de la api y devuelve el objeto owm"
@@ -33,9 +39,13 @@ def keyOwm(key):
 
 def obtenerClima(key):
     "La funcion recibe la keyOwm, devuelve tupla hora/fecha, el porcentaje de nubes y la temperatura en C"
-    owm=keyOwm(key)
+    owm = OWM(key)
+    mgr = owm.weather_manager()
+    lugar = mgr.weather_at_place("Buenos Aires, AR")
+    
+    #owm=keyOwm(key)
     #lugar=objeto.weather_at_coords(-34.61, -58.38)
-    lugar=owm.weather_at_place("Buenos Aires, AR")
+    #lugar=owm.weather_at_place("Buenos Aires, AR")
     clima=lugar.get_weather()
     temperaturas=clima.get_temperature(unit='celsius')#devuelve diccionario con varias temp, max, min etc
     temperaturaActual=temperaturas["temp"]
@@ -348,6 +358,7 @@ def rankingPlaylist(user,objeto):
     for j in range(0,len(listaRanking)):
         print(listaRanking[j])
     input("Presione Enter para volver al Menú...")
+
 def menu(user,objeto,keyOwm):
     bandera = True
 
@@ -400,9 +411,9 @@ def menu(user,objeto,keyOwm):
             
             else:
                 print('Ingrese un comando valido.')
-                
-        except:
-            print("Error de red, intentelo nuevamente")
+        except Exception as error: 
+            print(error)
+
             
     print("Hasta luego :)")
     
