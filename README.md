@@ -29,7 +29,7 @@ Asegúrate de tener instaladas las siguientes dependencias:
 
 Además debes generarte una key para la API de Spotify y de OpenWeather.
 - [Spotify for Developers](https://developer.spotify.com/)
-- [OpenWeather API](https://developer.spotify.com/)
+- [OpenWeather API](https://openweathermap.org/api)
 
 ## Configuración
 
@@ -47,7 +47,7 @@ Debes reemplazar los valores por tus propias claves.
 ## Uso
 - Ejecuta python SpotyCloud.py desde la línea de comandos.
 ```bash
-python SpotiCloud
+python SpotiCloud.py
 ```
 - Sigue las instrucciones para autenticarte con Spotify.
 - Utiliza las opciones del menú para acceder a las diferentes funciones del programa.
